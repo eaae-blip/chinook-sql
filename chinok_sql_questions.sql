@@ -1,69 +1,139 @@
 -- ============================================================
--- ============================================================
 
--- Question 1: List all customers who are from Germany.
-SELECT CustomerId, FirstName, LastName, Country 
-FROM customers 
-WHERE Country = 'Germany';
+-- Q1: List the name of every genre.
+SELECT Name 
+FROM genres;
 
 
--- Question 2: Find the total number of tracks belonging to each genre.
-SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TotalTracks
-FROM genres g
-JOIN tracks t ON g.GenreId = t.GenreId
-GROUP BY g.Name
-ORDER BY TotalTracks DESC;
+-- Q2: Show the name and length of all tracks longer than 300,000 milliseconds.
+SELECT Name, Milliseconds 
+FROM tracks 
+WHERE Milliseconds > 300000;
 
 
--- Question 3: Retrieve a list of all albums and their corresponding artists.
-SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName
-FROM albums al
-JOIN artists ar ON al.ArtistId = ar.ArtistId
-ORDER BY ar.Name;
+-- Q3: What distinct billing countries appear in the invoices table?
+SELECT DISTINCT BillingCountry 
+FROM invoices;
 
 
--- Question 4: Find the total sales (revenue) generated in each country.
-SELECT BillingCountry, SUM(Total) AS TotalSales
-FROM invoices
-GROUP BY BillingCountry
-ORDER BY TotalSales DESC;
-
-
--- Question 5: Identify the top 5 customers who have spent the most money.
-SELECT c.CustomerId, c.FirstName, c.LastName, SUM(i.Total) AS TotalSpent
-FROM customers c
-JOIN invoices i ON c.CustomerId = i.CustomerId
-GROUP BY c.CustomerId
-ORDER BY TotalSpent DESC
+-- Q4: Show the 5 most expensive tracks by UnitPrice (most expensive first).
+SELECT Name, UnitPrice 
+FROM tracks 
+ORDER BY UnitPrice DESC 
 LIMIT 5;
 
 
--- Question 6: Find how many tracks were written or composed by 'AC/DC'.
--- Question 6: Find how many tracks were written or composed by 'AC/DC'.
-SELECT COUNT(TrackId) AS ACDC_Track_Count
-FROM tracks
-WHERE Composer LIKE '%AC/DC%';
+-- Q5: Find all customers whose email ends in .com (show name and email).
+SELECT FirstName, LastName, Email 
+FROM customers 
+WHERE Email LIKE '%.com';
 
 
--- Question 7: Calculate the total sales handled by each Employee (Support Rep).
-SELECT e.EmployeeId, e.FirstName, e.LastName, SUM(i.Total) AS TotalSalesHandled
-FROM employees e
-JOIN customers c ON e.EmployeeId = c.SupportRepId
-JOIN invoices i ON c.CustomerId = i.CustomerId
-GROUP BY e.EmployeeId
-ORDER BY TotalSalesHandled DESC;
+-- Q6: How many albums are in the database in total?
+SELECT COUNT(*) AS TotalAlbums 
+FROM albums;
 
 
--- Question 8: Find the total revenue generated in the year 2011.
-SELECT SUM(Total) AS TotalRevenue_2011
-FROM invoices
-WHERE InvoiceDate LIKE '2011%';
--- Question 9 (Bonus): Find the top 10 most popular artists based on the number of tracks sold.
-SELECT ar.Name AS ArtistName, COUNT(ii.TrackId) AS TracksSold
-FROM artists ar
-JOIN albums al ON ar.ArtistId = al.ArtistId
-JOIN tracks t ON al.AlbumId = t.AlbumId
-JOIN invoice_items ii ON t.TrackId = ii.TrackId
-GROUP BY ar.Name
-ORDER BY TracksSold DESC
+-- Q7: What is the average invoice total?
+SELECT AVG(Total) AS AverageInvoiceTotal 
+FROM invoices;
+
+
+-- Q8: What are the cheapest and most expensive track prices?
+SELECT MIN(UnitPrice) AS CheapestPrice, MAX(UnitPrice) AS MostExpensivePrice 
+FROM tracks;
+
+
+-- Q9: How many customers are in each country? Show country and count, most customers first.
+SELECT Country, COUNT(*) AS CustomerCount 
+FROM customers 
+GROUP BY Country 
+ORDER BY CustomerCount DESC;
+
+
+-- Q10: What is the total revenue per billing country? Highest first.
+SELECT BillingCountry, SUM(Total) AS TotalRevenue 
+FROM invoices 
+GROUP BY BillingCountry 
+ORDER BY TotalRevenue DESC;
+
+
+-- Q11: Which billing countries have more than 10 invoices?
+SELECT BillingCountry, COUNT(*) AS InvoiceCount 
+FROM invoices 
+GROUP BY BillingCountry 
+HAVING InvoiceCount > 10;
+
+
+-- Q12: List each album title alongside its artist's name.
+SELECT al.Title AS AlbumTitle, ar.Name AS ArtistName 
+FROM albums al 
+JOIN artists ar ON al.ArtistId = ar.ArtistId;
+
+
+-- Q13: Show each track's name with its genre name.
+SELECT t.Name AS TrackName, g.Name AS GenreName 
+FROM tracks t 
+JOIN genres g ON t.GenreId = g.GenreId;
+
+
+-- Q14: List all track names that belong to the 'Rock' genre.
+SELECT t.Name AS TrackName 
+FROM tracks t 
+JOIN genres g ON t.GenreId = g.GenreId 
+WHERE g.Name = 'Rock';
+
+
+-- Q15: How many tracks does each genre have? Show genre name and count.
+SELECT g.Name AS GenreName, COUNT(t.TrackId) AS TrackCount 
+FROM genres g 
+JOIN tracks t ON g.GenreId = t.GenreId 
+GROUP BY g.Name;
+
+
+-- Q16: For each artist, how many albums do they have? Show artist name and album count, most first.
+SELECT ar.Name AS ArtistName, COUNT(al.AlbumId) AS AlbumCount 
+FROM artists ar 
+JOIN albums al ON ar.ArtistId = al.ArtistId 
+GROUP BY ar.Name 
+ORDER BY AlbumCount DESC;
+
+
+-- Q17: What is the total amount spent by each customer? Show full name and total, highest first.
+SELECT c.FirstName || ' ' || c.LastName AS FullName, SUM(i.Total) AS TotalSpent 
+FROM customers c 
+JOIN invoices i ON c.CustomerId = i.CustomerId 
+GROUP BY c.CustomerId 
+ORDER BY TotalSpent DESC;
+
+
+-- Q18: Which 10 tracks generated the most revenue? (Revenue = UnitPrice * Quantity.)
+SELECT t.Name AS TrackName, SUM(ii.UnitPrice * ii.Quantity) AS TotalRevenue 
+FROM invoice_items ii 
+JOIN tracks t ON ii.TrackId = t.TrackId 
+GROUP BY t.TrackId 
+ORDER BY TotalRevenue DESC 
 LIMIT 10;
+
+
+-- Q19: Find all artists that have no albums.
+SELECT ar.Name AS ArtistName 
+FROM artists ar 
+LEFT JOIN albums al ON ar.ArtistId = al.ArtistId 
+WHERE al.AlbumId IS NULL;
+
+
+-- Q20: Using a CTE, list the customers who spent more than the average customer's total spend.
+WITH CustomerSpend AS (
+    SELECT 
+        c.CustomerId,
+        c.FirstName || ' ' || c.LastName AS FullName,
+        SUM(i.Total) AS TotalSpent
+    FROM customers c
+    JOIN invoices i ON c.CustomerId = i.CustomerId
+    GROUP BY c.CustomerId
+)
+SELECT FullName, TotalSpent 
+FROM CustomerSpend 
+WHERE TotalSpent > (SELECT AVG(TotalSpent) FROM CustomerSpend)
+ORDER BY TotalSpent DESC;
