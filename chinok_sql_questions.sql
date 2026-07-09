@@ -57,3 +57,12 @@ ORDER BY TotalSalesHandled DESC;
 SELECT SUM(Total) AS TotalRevenue_2011
 FROM invoices
 WHERE InvoiceDate LIKE '2011%';
+-- Question 9 (Bonus): Find the top 10 most popular artists based on the number of tracks sold.
+SELECT ar.Name AS ArtistName, COUNT(ii.TrackId) AS TracksSold
+FROM artists ar
+JOIN albums al ON ar.ArtistId = al.ArtistId
+JOIN tracks t ON al.AlbumId = t.AlbumId
+JOIN invoice_items ii ON t.TrackId = ii.TrackId
+GROUP BY ar.Name
+ORDER BY TracksSold DESC
+LIMIT 10;
