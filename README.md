@@ -20,3 +20,8 @@ The SQL query script (**`chinok_sql_questions.sql`**) contains standard SQLite q
 6. **Specific Catalog Searches:** Finding track composition counts written by groups like 'AC/DC'.
 7. **Employee Performance:** Measuring total sales supported by individual Customer Service Support Representatives.
 8. **Date-Period Aggregations:** Aggregating total revenue generated specifically within the year 2011.
+## 🚀 How to Run the Queries
+1. Download the Chinook SQLite database file (`chinook.db`).
+2. Open a SQLite interface (like **DB Browser for SQLite** or the terminal command line).
+3. Open the `chinok_sql_questions.sql` script inside the database editor.
+4. Execute the queries sequentially to inspect the relational output logs.
