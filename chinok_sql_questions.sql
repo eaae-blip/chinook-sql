@@ -39,6 +39,7 @@ LIMIT 5;
 
 
 -- Question 6: Find how many tracks were written or composed by 'AC/DC'.
+-- Question 6: Find how many tracks were written or composed by 'AC/DC'.
 SELECT COUNT(TrackId) AS ACDC_Track_Count
 FROM tracks
 WHERE Composer LIKE '%AC/DC%';
