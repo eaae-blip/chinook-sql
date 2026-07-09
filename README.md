@@ -25,3 +25,7 @@ The SQL query script (**`chinok_sql_questions.sql`**) contains standard SQLite q
 2. Open a SQLite interface (like **DB Browser for SQLite** or the terminal command line).
 3. Open the `chinok_sql_questions.sql` script inside the database editor.
 4. Execute the queries sequentially to inspect the relational output logs.
+## 💡 SQL Best Practices Demonstrated
+*   **Capitalization:** All SQL command structures (`SELECT`, `JOIN`, `GROUP BY`) are kept in uppercase for visual clarity.
+*   **Table Aliasing:** Clean table aliasing (e.g. `tracks AS t`, `genres AS g`) is utilized to keep multi-table joins structured and legible.
+*   **Defensive Wildcards:** Used the `LIKE` clause with `%` wildcards to safely query composite text fields.
